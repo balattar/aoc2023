@@ -88,13 +88,19 @@ struct Round {
     blue: u32,
 }
 
+impl Round {
+    fn power(&self) -> u32 {
+        self.red * self.green * self.blue
+    }
+}
+
 #[derive(Debug)]
 struct Game {
     id: u32,
     rounds: Vec<Round>,
 }
 
-fn part1(input_list: Vec<&str>) -> u32 {
+fn part1(input_list: &Vec<&str>) -> u32 {
     let games: Vec<Game> = input_list.iter().map(|&l| (*l).into()).collect();
 
     let valid_games: Vec<&Game> = games
@@ -111,9 +117,45 @@ fn part1(input_list: Vec<&str>) -> u32 {
 
     valid_id_sum
 }
+
+fn part2(input_list: &Vec<&str>) -> u32 {
+    let games: Vec<Game> = input_list.iter().map(|&l| (*l).into()).collect();
+
+    let min_colors: Vec<Round> = games
+        .iter()
+        .map(|game| {
+            let red = game
+                .rounds
+                .iter()
+                .max_by(|&x, &y| x.red.cmp(&y.red))
+                .unwrap()
+                .red;
+            let green = game
+                .rounds
+                .iter()
+                .max_by(|&x, &y| x.green.cmp(&y.green))
+                .unwrap()
+                .green;
+            let blue = game
+                .rounds
+                .iter()
+                .max_by(|&x, &y| x.blue.cmp(&y.blue))
+                .unwrap()
+                .blue;
+            Round { red, green, blue }
+        })
+        .collect();
+
+    let power_sum: u32 = min_colors.iter().map(|mc| mc.power()).sum();
+
+    power_sum
+}
 fn main() {
     let input_list = get_input_vec(INPUT);
 
-    let part1_answer = part1(input_list);
+    let part1_answer = part1(&input_list);
     dbg!(part1_answer);
+
+    let part2_answer = part2(&input_list);
+    dbg!(part2_answer);
 }
